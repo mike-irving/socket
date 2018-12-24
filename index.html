@@ -107,6 +107,8 @@ button:active { background: #ddd; }
 			console.log('start', id);
 			$('#game').fadeIn(200);
 			$('#msg').hide();
+			$('#scores').toggle(!window.mobi);
+			$('#action').toggle(window.mobi);
 		});
 	
 		socket.on('score', function(value){
