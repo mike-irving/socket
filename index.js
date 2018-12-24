@@ -9,8 +9,8 @@ const INDEX = path.join(__dirname, 'index.html');
 
 // Start server
 const server = express()
-  .use((req, res) => res.sendFile(INDEX) )
- .listen(PORT, () => console.log("Listening on localhost:" + PORT));
+	.use((req, res) => res.sendFile(INDEX) )
+	.listen(PORT, () => console.log("Listening on https://wowface.herokuapp.com/:" + PORT));
 
 // Initiatlize SocketIO
 const io = socketIO(server);
