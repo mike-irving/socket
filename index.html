@@ -122,9 +122,9 @@ button:active { background: #ddd; }
 			//$('#scores .value').text(value);
 		});
 		
-		//socket.on('hello', function(id){
-		//	console.log('hello new socket', id);
-		//});
+		socket.on('hello', function(id){
+			console.log('hello new socket', id);
+		});
 	}
 	
 	function onBtnHit() {

@@ -31,7 +31,7 @@ io.on('connection', function(socket) {
 		//io.in(channel).emit('start', channel);
 		socket.emit('start', channel);
 		
-		//io.emit('hello', channel);
+		io.emit('hello', channel);
 	});
 	
 	
