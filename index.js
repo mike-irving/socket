@@ -27,10 +27,11 @@ io.on('connection', function(socket) {
 		
 		socket.join(channel);
 		
-		//io.emit('start', channel);
-		socket.emit('start', channel);
-		io.emit('hello', channel);
+		// https://socket.io/docs/emit-cheatsheet/
+		io.to(channel).emit('start', channel);
+		//socket.emit('start', channel);
 		
+		//io.emit('hello', channel);
 	});
 	
 	

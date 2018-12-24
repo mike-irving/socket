@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>SocketIO Client</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+<title>手機<>電腦螢幕即時互動</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scale=0, user-scale=no, shrink-to-fit=no">
 
 <script>
 /** Mobile device redirection */
@@ -13,13 +13,28 @@ window.mobi = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|co
 </script>
 <style>
 body {
-	padding: 10px;
-	font-size: 15px;
+	padding: 20px;
+	font-size: 17px;
+	font-family: Arial, sans-serif;
+	line-height: 1.65;
+	color: #333;
+	text-align: center;
 }
+button { background: #eee; border-radius: 4px; padding: .3em .75em; font-size: 100%; cursor: pointer; }
+button:active { background: #ddd; }
+#channel { margin-bottom: 20px; color: #ddd; }
 #msgPC { display: none; }
+#qrcode { display: block; width: 240px; margin: 0 auto; }
 #msgMB { display: none; }
-#scores .value { font-size: 72px; }
-#btnHit { font-size: 72px; }
+.msg { display: block; margin-bottom: 25px; font-size: 116%; font-weight: 700; letter-spacing: .075em; }
+.em { color: orangered; }
+#url { width: 150px;  padding: .3em 1em; height: 26px; text-align: center; font-size: .6em; border: 1px solid #ddd; }
+
+#game { display: none;}
+#status { margin: 60px 0; }
+#scores .value { font-size: 6em; line-height: 1em; vertical-align: middle; }
+#btnHit { font-size: 2.4em; }
+#action .shake { font-size: 2.4em; }
 </style>
 </head>
 
@@ -28,13 +43,26 @@ body {
 
 
 
-	<div id="channel"></div>
-	<div id="msgPC">請用手機掃描QR Code啟動搖桿<a id="qrcode" target="_blank" href="#" style="display:block"></a></div>
-	<div id="msgMB">請用電腦瀏覽器同時開啟遊戲畫面 <a class="url" target="_blank" href="#"></a></div>
+	<div id="channel">連線頻道：<span class="id"></span></div>
+	<div id="msg">
+		<div id="msgPC">
+			<span class="msg">請拿起手機掃描 QR Code 進行互動</span>
+			<a id="qrcode" target="_blank" href="#"></a>
+		</div>
+		<div id="msgMB">
+			<span class="msg">請使用電腦開啟<strong class="em">以下連結</strong>進行互動</span>
+			<input id="url"> <button id="btnCopyLink">複製連結</button>
+		</div>
+	</div>
 	
-	<div id="scores">分數: <strong class="value">0</strong></div>
-	
-	<button id="btnHit">按我</button>
+	<div id="game">
+		<div id="status">手機和電腦已建立連線，互動中...</div>
+		<div id="scores">分數: <strong class="value em">0</strong></div>
+		<div id="action">
+			<button id="btnHit">按我</button> 或 <strong class="shake em">搖晃手機</strong>
+		</div>
+	</div>
+
 
 	
 	
@@ -46,51 +74,91 @@ body {
 <script>
 	
 	var channelId = location.search.split('?id=')[1] || (s4()+s4()),
-		channelUrl = 'https://wowface.herokuapp.com/?id=' + channelId;
-	
+		channelUrl = 'https://wowface.herokuapp.com/?id=' + channelId,
+		socket;
 	
 	
 	function init() {
 		
-		$('#channel').text(channelId);
+		$('#channel .id').text(channelId);
 		
 		if(!window.mobi) {
 			$('#msgPC').show();
-			$('#qrcode').qrcode(channelUrl).attr('href', channelUrl);
+			$('#qrcode').qrcode({
+				width: 240, height: 240, text: channelUrl  //http://jeromeetienne.github.io/jquery-qrcode/
+			}).attr('href', channelUrl);
 		}
 		if(window.mobi) {
 			$('#msgMB').show();
-			$('#msgMB .url').attr('href', channelUrl).text(channelUrl);
+			$('#url').val(channelUrl);
 		}
 		
 		$('#btnHit').on('click', onBtnHit);
+		
+		$('#btnCopyLink').on('click', createLink);
 	};
+	
+	function initSocket() {
+		socket = io(); // Get WebSocket
+	
+		socket.emit('join', channelId); // Join a channel
+		
+		socket.on('start', function(id){
+			console.log('start', id);
+			$('#game').fadeIn(200);
+			$('#msg').hide();
+		});
+	
+		socket.on('score', function(value){
+			//console.log('score', value);
+			$('#scores .value').prop('counter',0).animate({
+				counter: value
+			}, {
+				duration: 1234,
+				step: function(now) {
+					$(this).text(Math.ceil(now));
+				}
+			});
+			//$('#scores .value').text(value);
+		});
+		
+		//socket.on('hello', function(id){
+		//	console.log('hello new socket', id);
+		//});
+	}
 	
 	function onBtnHit() {
 		value = Math.floor(Math.random()*666);
 		socket.emit('score', value);
-	}
-
-	// Get WebSocket
-	var socket = io();
-
-
-	// Join a channel
-	socket.emit('join', channelId);
+	};
 	
-	socket.on('start', function(id){
-		console.log('start', id);
-	});
-
-	socket.on('score', function(value){
-		//console.log('score', value);
-		$('#scores .value').text(value);
-	});
 	
-	socket.on('hello', function(id){
-		console.log('hello new socket', id);
-	});
-	
+	function createLink() {
+		var ta = $('#url')[0];
+		
+		// https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+		if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+			var s, range = document.createRange();
+			ta.contenteditable = true;
+			ta.readonly = false;
+			range.selectNodeContents(ta);
+			s = window.getSelection();
+			s.removeAllRanges();
+			s.addRange(document.createRange());
+			ta.setSelectionRange(0, 999999);
+			document.execCommand('copy');
+		}
+		// https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
+		else {
+			ta.select();
+			document.execCommand('Copy'); 
+		}
+		
+		$('#btnCopyLink').addClass('disabled').text('已複製!');
+		setTimeout(function(){
+			$('#btnCopyLink').removeClass('disabled').text('複製網址');
+		}, 2000);
+	};
 
 	$(init);
 	
