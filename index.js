@@ -28,7 +28,7 @@ io.on('connection', function(socket) {
 		socket.join(channel);
 		
 		// https://socket.io/docs/emit-cheatsheet/
-		io.to(channel).emit('start', channel);
+		io.in(channel).emit('start', channel);
 		//socket.emit('start', channel);
 		
 		//io.emit('hello', channel);
