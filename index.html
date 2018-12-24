@@ -101,7 +101,7 @@ button:active { background: #ddd; }
 	function initSocket() {
 		socket = io(); // Get WebSocket
 	
-		socket.emit('join', channelId); // Join a channel
+		
 		
 		socket.on('start', function(id){
 			console.log('start', id);
@@ -127,6 +127,8 @@ button:active { background: #ddd; }
 		socket.on('hello', function(id){
 			console.log('hello new socket', id);
 		});
+		
+		socket.emit('join', channelId); // Join a channel
 	}
 	
 	function onBtnHit() {

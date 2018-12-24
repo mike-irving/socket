@@ -23,7 +23,7 @@ io.on('connection', function(socket) {
 	
 	socket.on('join', function (ch) {
 		channel = ch;
-		console.log('user connected => ' + channel);
+		//console.log('user connected => ' + channel);
 		
 		socket.join(channel);
 		
