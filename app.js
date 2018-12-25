@@ -9,8 +9,10 @@ const INDEX = path.join(__dirname, 'index.html');
 
 // Start server
 const server = express()
+	.use(express.static('public'))
 	.use((req, res) => res.sendFile(INDEX) )
-	.listen(PORT, () => console.log("Listening on :" + PORT));
+	.listen(PORT, () => console.log("Listening on :" + PORT))
+	
 
 // Initiatlize SocketIO
 const io = socketIO(server);
