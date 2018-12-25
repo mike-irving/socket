@@ -12,7 +12,9 @@ const server = express()
 	.use(express.static('public'))
 	.use((req, res) => res.sendFile(INDEX) )
 	.listen(PORT, () => console.log("Listening on :" + PORT))
-	
+
+//https://expressjs.com/en/starter/static-files.html
+//https://stackoverflow.com/questions/24582338/how-can-i-include-css-files-using-node-express-and-ejs
 
 // Initiatlize SocketIO
 const io = socketIO(server);
