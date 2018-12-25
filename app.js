@@ -58,9 +58,9 @@ io.on('connection', function(socket) {
 	
 	
 	
-	socket.on('score', function(value){
-		socket.to(channel).emit('score', value);
-		//io.emit('score', value);
+	socket.on('score', function(data){
+		socket.to(channel).emit('score', data);
+		//io.emit('score', data);
 	});
 });
 
