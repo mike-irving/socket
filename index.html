@@ -94,6 +94,10 @@ button:active { background: #ddd; }
 		$('#channel .id').text(channelId);
 		$('#status .device strong').text(window.mobi?'手機':'電腦');
 		
+		if(history.replaceState) {
+			history.replaceState({},'', channelUrl);
+		}
+		
 		if(!window.mobi) {
 			$('#msgPC').show();
 			$('#qrcode').qrcode({
