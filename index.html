@@ -22,7 +22,7 @@ body {
 }
 button { background: #eee; border-radius: 4px; padding: .3em .75em; font-size: 100%; cursor: pointer; }
 button:active { background: #ddd; }
-#channel { margin-bottom: 20px; color: #ddd; }
+#channel { margin-bottom: 20px; color: #ccc; font-size: 85%; font-family: monospace; }
 #msgPC { display: none; }
 #qrcode { display: block; width: 240px; margin: 0 auto; }
 #msgMB { display: none; }
@@ -59,7 +59,7 @@ button:active { background: #ddd; }
 		<div id="status">手機和電腦已建立連線，互動中...</div>
 		<div id="scores">分數: <strong class="value em">0</strong></div>
 		<div id="action">
-			<button id="btnHit">按我</button> 或 <strong class="shake em">搖晃手機</strong>
+			<button id="btnHit">按我</button> <br>或 <strong class="shake em">搖晃手機</strong>
 		</div>
 	</div>
 
@@ -70,11 +70,12 @@ button:active { background: #ddd; }
 <!--<script src="/socket.io/socket.io.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
-<!-- Client Code -->
+
 <script>
 	
 	var channelId = location.search.split('?id=')[1] || (s4()+s4()),
-		channelUrl = 'https://wowface.herokuapp.com/?id=' + channelId,
+		//channelUrl = /file:/.test(location.protocol)?'http://127.0.0.1:3000/':'https://wowface.herokuapp.com/?id=' + channelId,
+		channelUrl = location.protocol + '//' + location.host + '/?id=' + channelId,
 		socket;
 	
 	
@@ -116,7 +117,7 @@ button:active { background: #ddd; }
 			$('#scores .value').prop('counter',0).animate({
 				counter: value
 			}, {
-				duration: 1234,
+				duration: 666,
 				step: function(now) {
 					$(this).text(Math.ceil(now));
 				}
@@ -124,11 +125,11 @@ button:active { background: #ddd; }
 			//$('#scores .value').text(value);
 		});
 		
-		socket.on('hello', function(id){
-			console.log('hello new socket', id);
+		socket.on('hello', function(opts){
+			console.log((opts.mobi?'Mobile':'PC') + ' user on socket ' + opts.channel, opts.userCount);
 		});
 		
-		socket.emit('join', channelId); // Join a channel
+		socket.emit('join', {channel:channelId, mobi:window.mobi}); // Join a channel
 	}
 	
 	function onBtnHit() {
@@ -163,7 +164,8 @@ button:active { background: #ddd; }
 			$('#btnCopyLink').removeClass('disabled').text('複製網址');
 		}, 2000);
 	};
-
+	
+	initSocket();
 	$(init);
 	
 	
