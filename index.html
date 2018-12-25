@@ -116,7 +116,7 @@ button:active { background: #ddd; }
 		// https://www.raymondcamden.com/2017/04/25/using-device-motion-on-the-web
 		// https://developers.google.com/web/fundamentals/native-hardware/device-orientation/
 		shakEvent.start();
-		$(window).on('shake', onShake);
+		window.addEventListener('shake', onShake, false);
 		//shakEvent.stop(); //stop listening
 	};
 	
